@@ -1,5 +1,5 @@
-import { ListToolsResultSchema, CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
-import { MCPConnection } from "./types.js";
+import { ListToolsResultSchema, CallToolResultSchema } from "@modelcontextprotocol/sdk/types";
+import { MCPConnection } from "./types";
 
 export const getAllMCPTools = async (connections: Record<string, MCPConnection>): Promise<Record<string, any[]>> => {
   const allTools: Record<string, any[]> = {};

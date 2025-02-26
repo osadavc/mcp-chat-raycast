@@ -1,8 +1,8 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { Client } from "@modelcontextprotocol/sdk/client/index";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio";
 import fs from "fs/promises";
 import path from "path";
-import { MCPServerConfig, MCPServersConfig, MCPConnection, MCPManagerOptions } from "./types.js";
+import { MCPServerConfig, MCPServersConfig, MCPConnection, MCPManagerOptions } from "./types";
 
 export const loadMCPConfig = async (configPath: string): Promise<MCPServersConfig> => {
   try {
@@ -70,7 +70,7 @@ export const connectToAllMCPServers = async (
 
 export const initMCPManager = async (options: MCPManagerOptions = {}): Promise<Record<string, MCPConnection>> => {
   const {
-    configPath = path.join(process.cwd(), "mcp-server-config.json"),
+    configPath = path.join(process.cwd(), "mcp-server-configon"),
     clientInfo = { name: "mcp-client", version: "1.0.0" },
   } = options;
 

@@ -1,6 +1,6 @@
-import { MCPManagerOptions, MCPToolHandler } from "./types.js";
-import { initMCPManager, closeMCPConnections } from "./server-connection.js";
-import { getAllMCPTools, callMCPTool, callToolAcrossServers, createToolMap } from "./tool-operations.js";
+import { MCPManagerOptions, MCPToolHandler } from "./types";
+import { initMCPManager, closeMCPConnections } from "./server-connection";
+import { getAllMCPTools, callMCPTool, callToolAcrossServers, createToolMap } from "./tool-operations";
 
 const createMCPToolHandler = (connections: Record<string, any>): MCPToolHandler => {
   let toolMap: Record<string, string> | null = null;
@@ -46,4 +46,6 @@ export const createMCPManager = async (options: MCPManagerOptions = {}): Promise
   return createMCPToolHandler(connections);
 };
 
-export * from "./types.js";
+// Export the AI SDK adapter functionality
+export * from "./ai-sdk-adapter";
+export * from "./types";
