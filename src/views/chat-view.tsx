@@ -7,7 +7,7 @@ import { AnswerDetailView } from "./answer-detail-view";
 import { PreferencesActionSection } from "../actions/preferences";
 import { PrimaryAction } from "../actions";
 
-export const ChatView = ({ chats, use }: { chats: Chat[]; use: { chats: ChatHook } }) => {
+export const ChatView = ({ chats, use, question }: { chats: Chat[]; use: { chats: ChatHook }; question: string }) => {
   const sortedChats = useMemo(() => {
     return chats.sort((a: Chat, b: Chat) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [chats]);
@@ -31,7 +31,7 @@ export const ChatView = ({ chats, use }: { chats: Chat[]; use: { chats: ChatHook
             accessories={[{ text: `#${use.chats.data.length - i}` }]}
             title={sortedChat.question}
             detail={sortedChat.answer && <AnswerDetailView chat={sortedChat} streamData={use.chats.streamData} />}
-            actions={use.chats.isLoading ? undefined : getActionPanel(sortedChat.question)}
+            actions={use.chats.isLoading ? undefined : getActionPanel(question)}
           />
         );
       })}

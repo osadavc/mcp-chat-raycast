@@ -11,7 +11,8 @@ const AskAI = () => {
 
   const getActionPanel = (question: string) => (
     <ActionPanel>
-      <PrimaryAction title="Get Answer" onAction={() => chats.ask(question)} />
+      {question ? <PrimaryAction title="Get Answer" onAction={() => chats.ask(question)} /> : undefined}
+
       <PreferencesActionSection />
     </ActionPanel>
   );
@@ -33,7 +34,7 @@ const AskAI = () => {
       }}
       searchBarPlaceholder={chats.data.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
-      <ChatView chats={chats.data} use={{ chats }} />
+      <ChatView chats={chats.data} use={{ chats }} question={question.data} />
     </List>
   );
 };
