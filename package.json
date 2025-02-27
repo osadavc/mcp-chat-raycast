@@ -13,8 +13,42 @@
     {
       "name": "ask-ai",
       "title": "Ask AI",
-      "description": "",
-      "mode": "no-view"
+      "description": "Ask the AI a question",
+      "mode": "view"
+    },
+    {
+      "name": "mcp-servers",
+      "title": "MCP Servers",
+      "description": "Manage your MCP servers",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "api",
+      "label": "OpenAI Compatible API Key",
+      "description": "Enter your personal OpenAI compatible API key",
+      "type": "password",
+      "title": "API Key",
+      "required": true
+    },
+    {
+      "name": "model",
+      "label": "OpenAI Compatible Model",
+      "description": "Select the OpenAI compatible model you want to use",
+      "type": "textfield",
+      "title": "Model",
+      "required": true,
+      "default": "gpt-4o-mini"
+    },
+    {
+      "name": "base-url",
+      "label": "Base URL",
+      "description": "Enter the base URL of the OpenAI compatible API",
+      "type": "textfield",
+      "title": "Base URL",
+      "required": true,
+      "default": "https://api.openai.com/v1"
     }
   ],
   "dependencies": {
