@@ -25,7 +25,7 @@
   ],
   "preferences": [
     {
-      "name": "api",
+      "name": "apiKey",
       "label": "OpenAI Compatible API Key",
       "description": "Enter your personal OpenAI compatible API key",
       "type": "password",
@@ -42,7 +42,7 @@
       "default": "gpt-4o-mini"
     },
     {
-      "name": "base-url",
+      "name": "baseURL",
       "label": "Base URL",
       "description": "Enter the base URL of the OpenAI compatible API",
       "type": "textfield",
@@ -52,10 +52,13 @@
     }
   ],
   "dependencies": {
+    "@ai-sdk/openai": "^1.1.14",
     "@modelcontextprotocol/sdk": "^1.6.0",
     "@raycast/api": "^1.93.0",
     "@raycast/utils": "^1.17.0",
     "ai": "^4.1.46",
+    "axios": "^1.8.1",
+    "undici": "^7.3.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
