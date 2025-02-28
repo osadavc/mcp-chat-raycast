@@ -66,6 +66,7 @@ export const useChat = <T extends Chat>(props: T[]) => {
 
     const { textStream, toolCalls } = streamText({
       model: openai({ apiKey, baseURL })(model),
+      system: `You are a helpful assistant that can answer questions and help with tasks by using the tools provided. Today's date is ${new Date().toISOString().split("T")[0]}`,
       messages: [...chatTransformer(data), { role: "user", content: question }],
       tools: await convertToAISDKTools(mcpToolHandler),
       toolChoice: "auto",
