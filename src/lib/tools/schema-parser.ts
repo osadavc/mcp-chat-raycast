@@ -14,7 +14,6 @@ export const createZodSchemaFromJsonSchema = (schema: any): ZodSchema => {
     return z.any();
   }
 
-  // Handle primitive types directly
   if (schema.type && !schema.properties) {
     return createZodPrimitiveType(schema);
   }
@@ -29,7 +28,6 @@ export const createZodSchemaFromJsonSchema = (schema: any): ZodSchema => {
   for (const [key, prop] of Object.entries<any>(schema.properties)) {
     let zodProp = createZodPrimitiveType(prop);
 
-    // Make non-required fields optional
     if (!requiredFields.includes(key)) {
       zodProp = zodProp.optional();
     }
@@ -51,36 +49,95 @@ const createZodPrimitiveType = (prop: any): ZodSchema => {
   let zodProp: ZodSchema;
 
   switch (prop.type) {
-    case "string":
-      zodProp = z.string();
-      break;
-    case "number":
-    case "integer":
-      zodProp = z.number();
-      break;
-    case "boolean":
-      zodProp = z.boolean();
-      break;
-    case "array":
-      if (prop.items) {
-        zodProp = z.array(createZodSchemaFromJsonSchema(prop.items));
+    case "string": {
+      let stringProp = z.string();
+
+      if (prop.maxLength !== undefined) {
+        stringProp = stringProp.max(prop.maxLength);
+      }
+      if (prop.minLength !== undefined) {
+        stringProp = stringProp.min(prop.minLength);
+      }
+      if (prop.pattern !== undefined) {
+        stringProp = stringProp.regex(new RegExp(prop.pattern));
+      }
+      if (prop.format === "email") {
+        stringProp = stringProp.email();
+      }
+      if (prop.format === "url") {
+        stringProp = stringProp.url();
+      }
+
+      if (prop.enum !== undefined) {
+        zodProp = z.enum(prop.enum as [string, ...string[]]);
       } else {
-        zodProp = z.array(z.any());
+        zodProp = stringProp;
       }
       break;
-    case "object":
+    }
+
+    case "number":
+    case "integer": {
+      let numberProp = prop.type === "integer" ? z.number().int() : z.number();
+
+      if (prop.minimum !== undefined) {
+        numberProp = numberProp.min(prop.minimum);
+      }
+      if (prop.maximum !== undefined) {
+        numberProp = numberProp.max(prop.maximum);
+      }
+      if (prop.exclusiveMinimum !== undefined) {
+        numberProp = numberProp.gt(prop.exclusiveMinimum);
+      }
+      if (prop.exclusiveMaximum !== undefined) {
+        numberProp = numberProp.lt(prop.exclusiveMaximum);
+      }
+      if (prop.multipleOf !== undefined) {
+        numberProp = numberProp.multipleOf(prop.multipleOf);
+      }
+
+      zodProp = numberProp;
+      break;
+    }
+
+    case "boolean": {
+      zodProp = z.boolean();
+      break;
+    }
+
+    case "array": {
+      let arraySchema;
+
+      if (prop.items) {
+        arraySchema = z.array(createZodSchemaFromJsonSchema(prop.items));
+
+        if (prop.minItems !== undefined) {
+          arraySchema = arraySchema.min(prop.minItems);
+        }
+        if (prop.maxItems !== undefined) {
+          arraySchema = arraySchema.max(prop.maxItems);
+        }
+      } else {
+        arraySchema = z.array(z.any());
+      }
+
+      zodProp = arraySchema;
+      break;
+    }
+
+    case "object": {
       zodProp = createZodSchemaFromJsonSchema(prop);
       break;
+    }
+
     default:
       zodProp = z.any();
   }
 
-  // Add description if available
   if (prop.description) {
     zodProp = zodProp.describe(prop.description);
   }
 
-  // Add default value if available
   if (prop.default !== undefined) {
     zodProp = zodProp.default(prop.default);
   }
