@@ -2,6 +2,7 @@ import { List, ActionPanel, Action, Icon, Color, showToast, Toast, confirmAlert,
 import { useLocalStorage } from "@raycast/utils";
 import { MCPServer } from "./views/mcp-servers/types";
 import AddEditMCPServer from "./views/mcp-servers/AddEditMCPServer";
+import { getColorForKey } from "./lib/utils/get-key-color";
 
 const MCPServers = () => {
   const {
@@ -45,9 +46,9 @@ const MCPServers = () => {
         </ActionPanel>
       }
     >
-      {mcpServers.map((server: MCPServer) => (
+      {mcpServers.map((server: MCPServer, serverIndex: number) => (
         <List.Item
-          key={server.id}
+          key={`${server.id}-${serverIndex}`}
           id={server.id}
           title={server.name}
           icon={Icon.Globe}
@@ -55,9 +56,32 @@ const MCPServers = () => {
             <List.Item.Detail
               metadata={
                 <List.Item.Detail.Metadata>
+                  <List.Item.Detail.Metadata.Label title="ID" text={server.id} />
+                  <List.Item.Detail.Metadata.Separator />
                   <List.Item.Detail.Metadata.Label title="Server Name" text={server.name} />
                   <List.Item.Detail.Metadata.Separator />
                   <List.Item.Detail.Metadata.Label title="Command to Run" text={server.command} />
+
+                  {Object.keys(server.env).length > 0 && (
+                    <>
+                      <List.Item.Detail.Metadata.Separator />
+                      <List.Item.Detail.Metadata.Label title="Environment Variables" />
+                      {Object.entries(server.env).map(([key, value], envIndex) => (
+                        <List.Item.Detail.Metadata.Label
+                          key={`${key}-${envIndex}`}
+                          title={key}
+                          text={value}
+                          icon={{ source: Icon.Key, tintColor: getColorForKey(key) }}
+                        />
+                      ))}
+                    </>
+                  )}
+                  {Object.keys(server.env).length === 0 && (
+                    <>
+                      <List.Item.Detail.Metadata.Separator />
+                      <List.Item.Detail.Metadata.Label title="Environment Variables" text="None" />
+                    </>
+                  )}
                 </List.Item.Detail.Metadata>
               }
             />
