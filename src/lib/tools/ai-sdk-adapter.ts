@@ -14,12 +14,6 @@ export interface ToolExecuteOptions {
   messages?: any[];
 }
 
-export const tool = <TParameters extends ZodSchema, TResult>(
-  definition: ToolDefinition<TParameters, TResult>,
-): ToolDefinition<TParameters, TResult> => {
-  return definition;
-};
-
 export const convertToAISDKTools = async (mcpToolHandler: MCPToolHandler) => {
   const mcpTools = await mcpToolHandler.getAllTools();
   const aiSdkTools: Record<string, ToolDefinition<any, any>> = {};
