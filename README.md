@@ -1,4 +1,4 @@
-# MCP Chat
+# MCP X Raycast Chat
 
 ## AI Chat with Model Context Protocol (MCP) Servers
 
