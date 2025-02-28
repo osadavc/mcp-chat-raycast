@@ -1,12 +1,6 @@
-import { z, ZodSchema } from "zod";
 import { MCPToolHandler } from "./types";
 import { createZodSchemaFromJsonSchema } from "./schema-parser";
-
-export interface ToolDefinition<TParameters extends ZodSchema, TResult> {
-  description?: string;
-  parameters: TParameters;
-  execute?: (args: z.infer<TParameters>, options?: ToolExecuteOptions) => Promise<TResult>;
-}
+import { Tool, tool, ToolExecutionOptions } from "ai";
 
 export interface ToolExecuteOptions {
   toolCallId?: string;
@@ -16,14 +10,19 @@ export interface ToolExecuteOptions {
 
 export const convertToAISDKTools = async (mcpToolHandler: MCPToolHandler) => {
   const mcpTools = await mcpToolHandler.getAllTools();
-  const aiSdkTools: Record<string, ToolDefinition<any, any>> = {};
+  const aiSdkTools: Record<
+    string,
+    Tool<any, unknown> & {
+      execute: (args: any, options: ToolExecutionOptions) => PromiseLike<unknown>;
+    }
+  > = {};
 
-  for (const tool of mcpTools) {
-    aiSdkTools[tool.name] = tool({
-      description: tool.description || "",
-      parameters: createZodSchemaFromJsonSchema(tool.input_schema),
+  for (const mcpTool of mcpTools) {
+    aiSdkTools[mcpTool.name] = tool({
+      description: mcpTool.description || "",
+      parameters: createZodSchemaFromJsonSchema(mcpTool.input_schema),
       execute: async (args: any, options?: ToolExecuteOptions) => {
-        return await mcpToolHandler.callTool(tool.name, args);
+        return await mcpToolHandler.callTool(mcpTool.name, args);
       },
     });
   }

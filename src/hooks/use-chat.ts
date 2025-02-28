@@ -62,7 +62,9 @@ export const useChat = <T extends Chat>(props: T[]) => {
       },
     });
 
-    const { textStream } = streamText({
+    console.log("Creating tools...");
+
+    const { textStream, toolCalls, toolResults } = streamText({
       model: openai({ apiKey, baseURL })(model),
       messages: [...chatTransformer(data), { role: "user", content: question }],
       tools: await convertToAISDKTools(mcpToolHandler),
