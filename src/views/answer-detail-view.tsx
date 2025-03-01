@@ -15,8 +15,11 @@ const formatToolResult = (toolResult: ToolResult) => {
   return `\n\n**Tool Result:** \`${toolResult.toolName}\`\n\`\`\`json\n${formattedResult}\n\`\`\``;
 };
 
-const renderToolCallsAndResults = (chat: Chat) => {
+const renderToolCallsAndResults = (chat: Chat, isStreaming: boolean) => {
   if (!chat.toolCalls?.length) return "";
+
+  // Only show tool calls and results when not streaming
+  if (isStreaming) return "";
 
   let markdown = "";
 
@@ -34,10 +37,10 @@ const renderToolCallsAndResults = (chat: Chat) => {
 
 export const AnswerDetailView = (props: { chat: Chat; streamData?: Chat | undefined }) => {
   const { chat, streamData } = props;
-  const isStreaming = streamData && streamData.id === chat.id;
+  const isStreaming = Boolean(streamData && streamData.id === chat.id);
 
   const currentChat = isStreaming ? streamData : chat;
-  const toolContent = currentChat ? renderToolCallsAndResults(currentChat) : "";
+  const toolContent = currentChat ? renderToolCallsAndResults(currentChat, isStreaming) : "";
 
   const markdown = `${currentChat?.answer || ""}${toolContent}`;
 
