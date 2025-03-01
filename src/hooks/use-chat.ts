@@ -1,6 +1,6 @@
 import { getPreferenceValues, clearSearchBar, showToast, Toast } from "@raycast/api";
 import { useCallback, useMemo, useState } from "react";
-import { Chat, ToolCall, ToolResult } from "../type";
+import { Chat } from "../type";
 import crypto from "crypto";
 import { streamText } from "ai";
 import { openai } from "../lib/ai";
@@ -72,80 +72,23 @@ export const useChat = <T extends Chat>(props: T[]) => {
       toolChoice: "auto",
       toolCallStreaming: true,
       maxSteps: 10,
-      onStepFinish: ({ toolCalls, toolResults }) => {
+      onStepFinish: async ({ toolCalls }) => {
         if (toolCalls && toolCalls.length > 0) {
           for (const tc of toolCalls) {
-            const existingToolCallIndex = chat.toolCalls?.findIndex((e) => e.toolCallId === tc.toolCallId) ?? -1;
-
-            if (existingToolCallIndex !== -1 && chat.toolCalls) {
-              chat.toolCalls[existingToolCallIndex].status = "completed";
-            } else {
-              const newToolCall = {
-                toolName: tc.toolName,
-                toolCallId: tc.toolCallId,
-                args: tc.args,
-                status: "completed" as const,
-              };
-
-              chat.toolCalls = [...(chat.toolCalls || []), newToolCall];
-            }
+            await showToast({
+              title: `Calling ${tc.toolName} tool with args: ${JSON.stringify(tc.args)}`,
+              style: Toast.Style.Animated,
+            });
           }
         }
-
-        if (toolResults && toolResults.length > 0) {
-          const updatedToolResults = toolResults.map((tr) => ({
-            toolCallId: tr.toolCallId,
-            toolName: tr.toolName,
-            result: tr.result,
-          }));
-
-          chat.toolResults = [...(chat.toolResults || []), ...updatedToolResults];
-        }
-
-        setStreamData({ ...chat });
       },
     });
 
     try {
-      const checkForPartialToolCalls = async () => {
-        try {
-          const currentToolCalls = await Promise.race([
-            toolCalls,
-
-            new Promise((resolve) => setTimeout(() => resolve([]), 100)),
-          ]);
-
-          if (currentToolCalls && Array.isArray(currentToolCalls) && currentToolCalls.length > 0) {
-            for (const tc of currentToolCalls) {
-              const existingCall = chat.toolCalls?.find((t) => t.toolCallId === tc.toolCallId);
-
-              if (!existingCall) {
-                const newToolCall = {
-                  toolName: tc.toolName,
-                  toolCallId: tc.toolCallId,
-                  args: tc.args,
-                  status: "in-progress" as const,
-                };
-
-                chat.toolCalls = [...(chat.toolCalls || []), newToolCall];
-
-                setStreamData({ ...chat });
-              }
-            }
-          }
-        } catch (error) {
-          console.error("Error checking for partial tool calls:", error);
-        }
-      };
-
       for await (const textPart of textStream) {
         chat.answer += textPart;
         setStreamData({ ...chat });
-
-        checkForPartialToolCalls().catch(console.error);
       }
-
-      await checkForPartialToolCalls();
 
       setData((prev) => {
         return prev.map((a) => {
