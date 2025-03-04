@@ -1,5 +1,5 @@
 import { MCPToolHandler } from "./types";
-import { createZodSchemaFromJsonSchema } from "./schema-parser";
+import { JSONSchemaToZod } from "@dmitryrechkin/json-schema-to-zod";
 import { Tool, tool, ToolExecutionOptions } from "ai";
 
 export interface ToolExecuteOptions {
@@ -20,7 +20,7 @@ export const convertToAISDKTools = async (mcpToolHandler: MCPToolHandler) => {
   for (const mcpTool of mcpTools) {
     aiSdkTools[mcpTool.name] = tool({
       description: mcpTool.description || "",
-      parameters: createZodSchemaFromJsonSchema(mcpTool.input_schema),
+      parameters: JSONSchemaToZod.convert(mcpTool.input_schema),
       execute: async (args: any, options?: ToolExecuteOptions) => {
         return await mcpToolHandler.callTool(mcpTool.name, args);
       },

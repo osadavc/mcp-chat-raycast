@@ -64,7 +64,7 @@ export const useChat = <T extends Chat>(props: T[]) => {
       },
     });
 
-    const { textStream, toolCalls } = streamText({
+    const { textStream } = streamText({
       model: openai({ apiKey, baseURL })(model),
       system: `You are a helpful assistant that can answer questions and help with tasks by using the tools provided. Today's date is ${new Date().toISOString().split("T")[0]}`,
       messages: [...chatTransformer(data), { role: "user", content: question }],
@@ -76,7 +76,7 @@ export const useChat = <T extends Chat>(props: T[]) => {
         if (toolCalls && toolCalls.length > 0) {
           for (const tc of toolCalls) {
             await showToast({
-              title: `Calling ${tc.toolName} tool with args: ${JSON.stringify(tc.args)}`,
+              title: `Called ${tc.toolName} tool with args: ${JSON.stringify(tc.args)}`,
               style: Toast.Style.Animated,
             });
           }
